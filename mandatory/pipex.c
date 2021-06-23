@@ -6,7 +6,7 @@
 /*   By: jimikim <jimikim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 20:19:57 by jimikim           #+#    #+#             */
-/*   Updated: 2021/06/23 16:44:30 by jimikim          ###   ########.fr       */
+/*   Updated: 2021/06/23 18:09:59 by jimikim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,14 +73,18 @@ void	ft_process_redirect(char *cmd, char *path_s)
 		write(STDERR_FILENO, "pipe error.\n", 12);
 		exit(0);
 	}
-	pid = fork();
+	if ((pid = fork()) < 0)
+	{
+		write(STDERR_FILENO, "fork error.\n", 12);
+		exit(0);
+	}
 	if (pid)
 	{
 		ft_process_dup2(pipe_fd, STDIN_FILENO);
 		close(pipe_fd[1]);
 		waitpid(pid, NULL, 0);
 	}
-	else
+	else if (pid == 0)
 	{
 		ft_process_dup2(pipe_fd, STDOUT_FILENO);
 		close(pipe_fd[0]);
